@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   const { q, after } = req.query;
-
+  console.log("API FILE RUNNING - CLEAN VERSION");
   if (!q || q.trim() === "") {
     return res.status(400).json({ error: "Query is required" });
   }
