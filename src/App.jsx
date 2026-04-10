@@ -1,7 +1,6 @@
 import Header from "./components/layouts/Header";
 import PostList from "./components/Post/PostList";
 import SearchBar from "./components/SearchBar";
-import Trending from "./components/TrendingSidebar";
 import { useRedditSearch } from "./hooks/useRedditSearch";
 
 export default function App() {
@@ -18,11 +17,6 @@ export default function App() {
         {/* MAIN */}
         <div className="md:col-span-3">
           <PostList posts={posts} loading={loading} loadMore={loadMore} />
-        </div>
-
-        {/* SIDEBAR */}
-        <div className="hidden md:block">
-          <Trending onSelect={search} />
         </div>
       </div>
       {/* RESULTS */}
