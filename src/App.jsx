@@ -1,6 +1,7 @@
 import Header from "./components/layouts/Header";
 import PostList from "./components/Post/PostList";
 import SearchBar from "./components/SearchBar";
+import BackToTop from "./components/shared/BackToTop";
 import { useRedditSearch } from "./hooks/useRedditSearch";
 
 export default function App() {
@@ -18,7 +19,7 @@ export default function App() {
 
       {/* MAIN FEED AREA */}
       <main className="w-full flex justify-center">
-        <div className="w-full max-w-[470px]">
+        <div className="w-full max-w-117.5">
           {/* Error Message UI */}
           {error && (
             <div className="p-4 text-center text-red-400 text-sm">
@@ -42,7 +43,7 @@ export default function App() {
           )}
         </div>
       </main>
-
+      <BackToTop />
       {/* BOTTOM SPACING FOR MOBILE BROWSERS */}
       <div className="h-20" />
     </div>
