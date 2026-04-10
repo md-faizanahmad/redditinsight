@@ -3,30 +3,30 @@ import { useState } from "react";
 export default function PostMedia({ image, video }) {
   const [loaded, setLoaded] = useState(false);
 
+  // Use aspect-square or min-h-[300px] to prevent layout shift
+  const mediaClass = "w-full h-auto max-h-[600px] object-contain";
+
   if (video) {
-    return (
-      <video src={video} controls className="w-full max-h-125 object-cover" />
-    );
+    return <video src={video} controls playsInline className={mediaClass} />;
   }
 
   if (image) {
     return (
-      <div className="relative w-full max-h-125 overflow-hidden">
+      <div className="relative w-full bg-neutral-900 overflow-hidden flex items-center justify-center">
         {/* Blur placeholder */}
-        <img
-          src={image}
-          alt=""
-          className={`w-full object-cover blur-xl scale-110 absolute top-0 left-0 transition-opacity duration-500 ${
-            loaded ? "opacity-0" : "opacity-100"
-          }`}
-        />
+        {!loaded && (
+          <img
+            src={image}
+            alt=""
+            className="w-full h-full object-cover blur-2xl absolute inset-0 scale-110"
+          />
+        )}
 
-        {/* Actual image */}
         <img
           src={image}
-          alt=""
+          alt={image}
           onLoad={() => setLoaded(true)}
-          className={`w-full object-cover transition duration-500 ${
+          className={`${mediaClass} transition-opacity duration-300 ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
         />

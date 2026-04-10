@@ -7,19 +7,44 @@ export default function App() {
   const { posts, loading, error, search, loadMore } = useRedditSearch();
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-black text-white">
-      {/* HERO SECTION */}
-      <div className="flex flex-col items-center justify-center text-center px-4 pt-24">
+    <div className="min-h-screen bg-black text-white">
+      {/* STICKY TOP NAVIGATION */}
+      <div className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-white/10">
         <Header />
-        <SearchBar onSearch={search} />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto px-4 mt-10">
-        {/* MAIN */}
-        <div className="md:col-span-3">
-          <PostList posts={posts} loading={loading} loadMore={loadMore} />
+        <div className="pb-3">
+          <SearchBar onSearch={search} />
         </div>
       </div>
-      {/* RESULTS */}
+
+      {/* MAIN FEED AREA */}
+      <main className="w-full flex justify-center">
+        <div className="w-full max-w-[470px]">
+          {/* Error Message UI */}
+          {error && (
+            <div className="p-4 text-center text-red-400 text-sm">
+              <p>Something went wrong. Please try again.</p>
+            </div>
+          )}
+
+          {/* Post Feed */}
+          <PostList posts={posts} loading={loading} loadMore={loadMore} />
+
+          {/* INFINITE SCROLL TRIGGER (Optional but recommended) */}
+          {!loading && posts.length > 0 && (
+            <div className="flex justify-center py-8">
+              <button
+                onClick={loadMore}
+                className="text-blue-500 font-semibold text-sm hover:text-white transition"
+              >
+                Load More
+              </button>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* BOTTOM SPACING FOR MOBILE BROWSERS */}
+      <div className="h-20" />
     </div>
   );
 }
