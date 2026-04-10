@@ -7,9 +7,13 @@ export default function App() {
   const { posts, loading, error, search } = useRedditSearch();
 
   return (
-    <div className="p-4">
-      <Header />
-      <SearchBar onSearch={search} />
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-black text-white">
+      {/* HERO SECTION */}
+      <div className="flex flex-col items-center justify-center text-center px-4 pt-24">
+        <Header />
+        <SearchBar onSearch={search} />
+      </div>
+      {/* RESULTS */}
       <PostList posts={posts} loading={loading} error={error} />
     </div>
   );

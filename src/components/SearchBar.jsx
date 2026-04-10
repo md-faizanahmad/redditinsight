@@ -8,26 +8,21 @@ export default function SearchBar({ onSearch }) {
     onSearch(input);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
   return (
-    <div className="flex justify-center gap-2">
+    <div className="flex items-center gap-2 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-2 shadow-lg">
       <input
         type="text"
-        placeholder="Search Reddit..."
+        placeholder="Search Reddit topics..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className="border px-4 py-2 rounded w-80"
+        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+        className="bg-transparent outline-none px-4 py-2 w-72 text-white placeholder-gray-400"
       />
 
       <button
         onClick={handleSearch}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        disabled={!input.trim()}
+        className="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg disabled:opacity-50"
       >
         Search
       </button>
