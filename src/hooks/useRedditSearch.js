@@ -24,10 +24,8 @@ export function useRedditSearch() {
     if (!q) return;
 
     setLoading(true);
-
-    const url = `https://www.reddit.com/search.json?q=${q}${
-      after && !reset ? `&after=${after}` : ""
-    }`;
+    // fetch(`/api/reddit?q=${query}`)
+    const url = `/api/reddit?q=${query}${after && !reset ? `&after=${after}` : ""}`;
     console.log(url);
     const res = await fetch(url);
     const data = await res.json();

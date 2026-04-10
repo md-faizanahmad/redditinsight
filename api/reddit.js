@@ -1,26 +1,17 @@
-const fetch = require("node-fetch");
+export default async function handler(req, res) {
+  const { q, after } = req.query;
 
-module.exports = async (req, res) => {
   try {
-    const response = await fetch("https://www.reddit.com/r/reactjs.json", {
-      headers: {
-        "User-Agent":
-          "RedditExerciseApp/1.0 (by coldtruthvoice; devlensx@gmail.com)", // Replace with your details
-        Accept: "application/json",
-      },
-    });
+    const url = `https://www.reddit.com/search.json?q=${q}${
+      after ? `&after=${after}` : ""
+    }`;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Reddit API error ${response.status}: ${errorText}`);
-    }
-
+    const response = await fetch(url);
     const data = await response.json();
+
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.status(200).json(data);
   } catch (error) {
-    console.error("Proxy error:", error.message);
-    res
-      .status(500)
-      .json({ error: "Failed to fetch Reddit data. Please try again later." });
+    res.status(500).json({ error: "Failed to fetch Reddit data" });
   }
-};
+}
