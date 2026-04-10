@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "http://localhost:5173",
+      "/api": "https://reddit-insight-xi.vercel.app/",
     },
   },
 });
