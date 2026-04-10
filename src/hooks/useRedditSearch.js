@@ -1,61 +1,82 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useRedditSearch() {
+  const [query, setQuery] = useState("");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [after, setAfter] = useState(null);
 
-  const search = useCallback(async (query) => {
-    if (!query || query.trim() === "") {
-      setPosts([]);
-      return;
-    }
+  const debounceRef = useRef(null);
 
-    try {
-      setLoading(true);
-      setError(null);
+  // 🔥 SEARCH WITH DEBOUNCE
+  const search = (q) => {
+    setQuery(q);
 
-      const res = await fetch(
-        `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}`,
-      );
+    clearTimeout(debounceRef.current);
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch");
+    debounceRef.current = setTimeout(() => {
+      fetchPosts(q, true);
+    }, 500);
+  };
+
+  // 🔥 FETCH FUNCTION
+  const fetchPosts = async (q, reset = false) => {
+    if (!q) return;
+
+    setLoading(true);
+
+    const url = `https://www.reddit.com/search.json?q=${q}${
+      after && !reset ? `&after=${after}` : ""
+    }`;
+    console.log(url);
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const newPosts = data.data.children.map((item) => {
+      const d = item.data;
+
+      // 🔥 High quality image
+      let image = null;
+      if (d.preview?.images?.[0]?.source?.url) {
+        image = d.preview.images[0].source.url.replace(/&amp;/g, "&");
       }
 
-      const data = await res.json();
+      // 🔥 Video support
+      let video = null;
+      if (d.is_video && d.media?.reddit_video?.fallback_url) {
+        video = d.media.reddit_video.fallback_url;
+      }
 
-      // const cleaned = data.data.children.map((item) => ({
-      //   id: item.data.id,
-      //   title: item.data.title,
-      //   author: item.data.author,
-      //   upvotes: item.data.ups,
-      //   subreddit: item.data.subreddit,
-      //   url: `https://reddit.com${item.data.permalink}`,
-      // }));
-      const cleaned = data.data.children.map((item) => {
-        const d = item.data;
+      return {
+        id: d.id,
+        title: d.title,
+        author: d.author,
+        subreddit: d.subreddit,
+        upvotes: d.ups,
+        comments: d.num_comments,
+        image:
+          d.thumbnail && d.thumbnail.startsWith("http") ? d.thumbnail : null,
+        url: `https://reddit.com${d.permalink}`,
+        createdAt: d.created_utc,
+        image,
+        video,
+      };
+    });
 
-        return {
-          id: d.id,
-          title: d.title,
-          author: d.author,
-          subreddit: d.subreddit,
-          upvotes: d.ups,
-          comments: d.num_comments,
-          image:
-            d.thumbnail && d.thumbnail.startsWith("http") ? d.thumbnail : null,
-          url: `https://reddit.com${d.permalink}`,
-          createdAt: d.created_utc,
-        };
-      });
-      setPosts(cleaned);
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    setPosts((prev) => (reset ? newPosts : [...prev, ...newPosts]));
+    setAfter(data.data.after);
+    setLoading(false);
+  };
 
-  return { posts, loading, error, search };
+  // 🔥 LOAD MORE (INFINITE SCROLL)
+  const loadMore = () => {
+    if (!loading) fetchPosts(query);
+  };
+
+  return {
+    posts,
+    loading,
+    search,
+    loadMore,
+  };
 }
