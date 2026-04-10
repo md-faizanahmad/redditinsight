@@ -25,15 +25,30 @@ export function useRedditSearch() {
 
       const data = await res.json();
 
-      const cleaned = data.data.children.map((item) => ({
-        id: item.data.id,
-        title: item.data.title,
-        author: item.data.author,
-        upvotes: item.data.ups,
-        subreddit: item.data.subreddit,
-        url: `https://reddit.com${item.data.permalink}`,
-      }));
+      // const cleaned = data.data.children.map((item) => ({
+      //   id: item.data.id,
+      //   title: item.data.title,
+      //   author: item.data.author,
+      //   upvotes: item.data.ups,
+      //   subreddit: item.data.subreddit,
+      //   url: `https://reddit.com${item.data.permalink}`,
+      // }));
+      const cleaned = data.data.children.map((item) => {
+        const d = item.data;
 
+        return {
+          id: d.id,
+          title: d.title,
+          author: d.author,
+          subreddit: d.subreddit,
+          upvotes: d.ups,
+          comments: d.num_comments,
+          image:
+            d.thumbnail && d.thumbnail.startsWith("http") ? d.thumbnail : null,
+          url: `https://reddit.com${d.permalink}`,
+          createdAt: d.created_utc,
+        };
+      });
       setPosts(cleaned);
     } catch (err) {
       setError(err.message || "Something went wrong");
