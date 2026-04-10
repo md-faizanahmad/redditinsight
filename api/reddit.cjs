@@ -1,7 +1,6 @@
 export default async function handler(req, res) {
   const { q, after } = req.query;
 
-  // 🔥 HARD VALIDATION
   if (!q || q.trim() === "") {
     return res.status(400).json({ error: "Query is required" });
   }
@@ -11,7 +10,7 @@ export default async function handler(req, res) {
       after ? `&after=${after}` : ""
     }`;
 
-    const response = await fetch(url);
+    const response = await fetch(url); // ✅ native fetch
 
     if (!response.ok) {
       throw new Error(`Reddit API failed: ${response.status}`);
