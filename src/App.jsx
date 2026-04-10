@@ -1,5 +1,5 @@
 import Header from "./components/layouts/Header";
-import PostList from "./components/PostList";
+import PostList from "./components/Post/PostList";
 import SearchBar from "./components/SearchBar";
 import { useRedditSearch } from "./hooks/useRedditSearch";
 
