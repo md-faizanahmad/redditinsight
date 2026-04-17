@@ -24,9 +24,8 @@ export function useRedditSearch() {
     setLoading(true);
 
     try {
-      const url = `/api/reddit?q=${q}${
-        after && !reset ? `&after=${after}` : ""
-      }`;
+      const currentAfter = reset ? null : after;
+      const url = `/api/reddit?q=${q}${currentAfter ? `&after=${after}` : ""}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Fetch failed");
