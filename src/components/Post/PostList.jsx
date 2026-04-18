@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
-import PostSkeleton from "../shared/PostSkeleton";
 import PostCard from "./PostCard";
+import PostSkeleton from "../skeleton/PostSkeleton";
 
 export default function PostList({ posts, loading, loadMore }) {
   const observer = useRef();
@@ -42,7 +42,7 @@ export default function PostList({ posts, loading, loadMore }) {
 
       {/* Loading Skeletons */}
       {loading && (
-        <div className="w-full flex flex-col mt-8 ">
+        <div className="w-full flex flex-col mt-3 mb-8 ">
           {Array.from({ length: 2 }).map((_, i) => (
             <PostSkeleton key={`loading-${i}`} />
           ))}

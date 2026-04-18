@@ -13,7 +13,7 @@ export default function SearchBar({ onSearch }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-117.5 mx-auto px-4 relative flex items-center group"
+      className="max-w-130 mx-auto px-4 relative flex items-center group"
     >
       {/* Search Icon (Decorative/Left) */}
       <span className="absolute left-8 text-gray-500 group-focus-within:text-white transition-colors">

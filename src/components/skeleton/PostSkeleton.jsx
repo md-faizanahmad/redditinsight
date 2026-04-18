@@ -1,6 +1,6 @@
 export default function PostSkeleton() {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden animate-pulse">
+    <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden animate-pulse mb-8">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
         <div className="w-8 h-8 bg-gray-700 rounded-full"></div>

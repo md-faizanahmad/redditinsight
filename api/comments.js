@@ -6,35 +6,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const url = `https://www.reddit.com/comments/${id}.json`;
-
-    const response = await fetch(url, {
+    const response = await fetch(`https://www.reddit.com/comments/${id}.json`, {
       headers: {
         "User-Agent": "reddit-search-app/1.0",
       },
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch comments");
-    }
-
     const data = await response.json();
 
-    // comments are in second array
     const comments = data[1]?.data?.children || [];
 
-    // take top 5 only
-    const topComments = comments
-      .filter((c) => c.kind === "t1")
-      .slice(0, 5)
-      .map((c) => ({
+    // recursive parser (IMPORTANT)
+    const parseComment = (c) => {
+      if (c.kind !== "t1") return null;
+
+      return {
         id: c.data.id,
         author: c.data.author,
         body: c.data.body,
         upvotes: c.data.ups,
-      }));
+        replies: c.data.replies
+          ? c.data.replies.data.children.map(parseComment).filter(Boolean)
+          : [],
+      };
+    };
 
-    res.status(200).json(topComments);
+    const parsed = comments.map(parseComment).filter(Boolean).slice(0, 5); // limit
+
+    res.status(200).json(parsed);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
