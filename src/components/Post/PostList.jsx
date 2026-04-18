@@ -42,7 +42,7 @@ export default function PostList({ posts, loading, loadMore }) {
 
       {/* Loading Skeletons */}
       {loading && (
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-col mt-8 ">
           {Array.from({ length: 2 }).map((_, i) => (
             <PostSkeleton key={`loading-${i}`} />
           ))}

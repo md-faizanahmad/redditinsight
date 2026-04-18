@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PostList from "../Post/PostList";
+import PostList from "./PostList";
 
 export default function TrendingPosts({ active }) {
   const [posts, setPosts] = useState([]);

@@ -1,13 +1,17 @@
+import { useState } from "react";
+import { formatTime } from "../../utils/formatTime";
 import PostMedia from "./PostMedia";
 import { Heart, MessageCircle, Send, Bookmark } from "lucide-react"; // Optional: Use icons for real IG feel
+import Comments from "./Comments";
 
 export default function PostCard({ post }) {
+  const [showComments, setShowComments] = useState(false);
   return (
-    <div className="bg-black w-full border-b border-white/10 md:border md:rounded-sm mb-4">
+    <div className="bg-black w-full border-b border-white/10 md:border md:rounded-sm mb-8">
       {/* HEADER: Subreddit and Author */}
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600 p-[1.5px]">
+          <div className="w-8 h-8 rounded-full bg-linear-to-tr from-yellow-400 to-purple-600 p-[1.5px]">
             <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-[10px] border-2 border-black">
               {post.author[0].toUpperCase()}
             </div>
@@ -46,8 +50,15 @@ export default function PostCard({ post }) {
           <span className="font-semibold mr-2">r/{post.subreddit}</span>
           {post.title}
         </p>
-        <p className="text-xs text-gray-500 uppercase tracking-tighter pt-1">
-          View all {post.comments} comments
+        <button
+          onClick={() => setShowComments((prev) => !prev)}
+          className="text-xs text-blue-400 hover:text-white"
+        >
+          {showComments ? "Hide comments" : "View comments"}
+        </button>
+        <Comments postId={post.id} visible={showComments} />
+        <p>
+          <span>{formatTime(post.createdAt)}</span>
         </p>
       </div>
     </div>

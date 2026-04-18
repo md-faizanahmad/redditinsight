@@ -1,9 +1,9 @@
 import FeedHeader from "./components/FeedHeader";
 import Header from "./components/layouts/Header";
 import PostList from "./components/Post/PostList";
+import TrendingPosts from "./components/Post/TrendingPosts";
 import SearchBar from "./components/SearchBar";
 import BackToTop from "./components/shared/BackToTop";
-import TrendingPosts from "./components/trending/TrendingPosts";
 import { useRedditSearch } from "./hooks/useRedditSearch";
 export default function App() {
   const { posts, loading, error, search, loadMore, isSearching } =
