@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
 
-// Initialize Redis using env variables
+// Initialize Redis
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
@@ -8,20 +8,21 @@ const redis = new Redis({
 
 // Rate limit config
 const RATE_LIMIT_WINDOW = 10; // seconds
-const RATE_LIMIT_MAX = 20; // max requests per IP per window
+const RATE_LIMIT_MAX = 20;
 
 export default async function handler(req, res) {
   const { q, after } = req.query;
 
-  // Get client IP (important for rate limiting)
+  // 🔥 Detect mode
+  const isTrending = !q;
+
+  // -----------------------------
+  // 🔒 RATE LIMITING
+  // -----------------------------
   const ip =
     req.headers["x-forwarded-for"] || req.headers["x-real-ip"] || "unknown";
 
-  // -----------------------------
-  // 🔒 RATE LIMITING (Redis)
-  // -----------------------------
   const rateKey = `rate:${ip}`;
-
   const current = await redis.get(rateKey);
 
   if (current && Number(current) >= RATE_LIMIT_MAX) {
@@ -35,24 +36,29 @@ export default async function handler(req, res) {
   }
 
   // -----------------------------
-  // ✅ VALIDATION
+  // ✅ VALIDATION (ONLY for search)
   // -----------------------------
-  if (!q || typeof q !== "string") {
-    return res.status(400).json({ error: "Query is required" });
-  }
+  let safeQuery = null;
 
-  const safeQuery = q.trim().toLowerCase();
+  if (!isTrending) {
+    if (typeof q !== "string") {
+      return res.status(400).json({ error: "Invalid query" });
+    }
 
-  if (safeQuery.length < 2 || safeQuery.length > 50) {
-    return res.status(400).json({ error: "Invalid query length" });
+    safeQuery = q.trim().toLowerCase();
+
+    if (safeQuery.length < 2 || safeQuery.length > 50) {
+      return res.status(400).json({ error: "Invalid query length" });
+    }
   }
 
   // -----------------------------
   // ⚡ CACHE KEY
   // -----------------------------
-  const cacheKey = `search:${safeQuery}:${after || "first"}`;
+  const cacheKey = isTrending
+    ? "trending"
+    : `search:${safeQuery}:${after || "first"}`;
 
-  // Check Redis cache
   const cached = await redis.get(cacheKey);
 
   if (cached) {
@@ -60,13 +66,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Build Reddit URL
-    const url = `https://www.reddit.com/search.json?q=${encodeURIComponent(
-      safeQuery,
-    )}${after ? `&after=${after}` : ""}`;
+    // -----------------------------
+    // 🌐 BUILD URL
+    // -----------------------------
+    let url;
+
+    if (isTrending) {
+      url = "https://www.reddit.com/r/popular.json";
+    } else {
+      url = `https://www.reddit.com/search.json?q=${encodeURIComponent(
+        safeQuery,
+      )}${after ? `&after=${after}` : ""}`;
+    }
 
     // -----------------------------
-    // ⏱ TIMEOUT PROTECTION
+    // ⏱ TIMEOUT
     // -----------------------------
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -89,12 +103,12 @@ export default async function handler(req, res) {
     // -----------------------------
     // 💾 CACHE STORE
     // -----------------------------
-    const TTL = after ? 5 : 15; // shorter for pagination
+    const TTL = isTrending ? 30 : after ? 5 : 15;
 
     await redis.set(cacheKey, data, { ex: TTL });
 
     // -----------------------------
-    // 🌐 CORS
+    // 🌐 RESPONSE
     // -----------------------------
     res.setHeader("Access-Control-Allow-Origin", "*");
 

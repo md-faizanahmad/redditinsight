@@ -5,13 +5,32 @@ export function useRedditSearch() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [after, setAfter] = useState(null);
-
+  const [isSearching, setIsSearching] = useState(false);
   const debounceRef = useRef(null);
+
+  // const search = (q) => {
+  //   clearTimeout(debounceRef.current);
+
+  //   debounceRef.current = setTimeout(() => {
+  //     setQuery(q);
+  //     setAfter(null);
+  //     fetchPosts(q, true);
+  //   }, 500);
+  // };
+
+  // With Trending Post
 
   const search = (q) => {
     clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(() => {
+      if (!q || q.trim() === "") {
+        setIsSearching(false);
+        fetchPosts("", true); // fetch trending
+        return;
+      }
+
+      setIsSearching(true);
       setQuery(q);
       setAfter(null);
       fetchPosts(q, true);
@@ -25,7 +44,12 @@ export function useRedditSearch() {
 
     try {
       const currentAfter = reset ? null : after;
-      const url = `/api/reddit?q=${q}${currentAfter ? `&after=${after}` : ""}`;
+      // const url = `/api/reddit?q=${q}${currentAfter ? `&after=${after}` : ""}`;
+
+      // with trending post
+      const url = q
+        ? `/api/reddit?q=${q}${after && !reset ? `&after=${after}` : ""}`
+        : `/api/reddit`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Fetch failed");
@@ -81,5 +105,6 @@ export function useRedditSearch() {
     loading,
     search,
     loadMore,
+    isSearching,
   };
 }

@@ -1,11 +1,13 @@
+import FeedHeader from "./components/FeedHeader";
 import Header from "./components/layouts/Header";
 import PostList from "./components/Post/PostList";
 import SearchBar from "./components/SearchBar";
 import BackToTop from "./components/shared/BackToTop";
+import TrendingPosts from "./components/trending/TrendingPosts";
 import { useRedditSearch } from "./hooks/useRedditSearch";
-
 export default function App() {
-  const { posts, loading, error, search, loadMore } = useRedditSearch();
+  const { posts, loading, error, search, loadMore, isSearching } =
+    useRedditSearch();
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -26,10 +28,26 @@ export default function App() {
               <p>Something went wrong. Please try again.</p>
             </div>
           )}
+          {/* <FeedHeader isSearching={isSearching} /> */}
 
           {/* Post Feed */}
-          <PostList posts={posts} loading={loading} loadMore={loadMore} />
+          {/* <PostList posts={posts} loading={loading} loadMore={loadMore} /> */}
 
+          {/* 🔥 TRENDING */}
+          <TrendingPosts active={!isSearching} />
+
+          {/* 🔍 SEARCH RESULTS */}
+          {isSearching && (
+            <>
+              <div className="px-4 py-4">
+                <h2 className="text-lg font-semibold text-white/80">
+                  🔍 Search Results
+                </h2>
+              </div>
+
+              <PostList posts={posts} loading={loading} loadMore={loadMore} />
+            </>
+          )}
           {/* INFINITE SCROLL TRIGGER (Optional but recommended) */}
           {!loading && posts.length > 0 && (
             <div className="flex justify-center py-8">
