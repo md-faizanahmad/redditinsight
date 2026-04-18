@@ -18,7 +18,6 @@ export default function App() {
           <SearchBar onSearch={search} />
         </div>
       </div>
-
       {/* MAIN FEED AREA */}
       <main className="w-full flex justify-center">
         <div className="w-full max-w-117.5">
@@ -64,6 +63,26 @@ export default function App() {
       <BackToTop />
       {/* BOTTOM SPACING FOR MOBILE BROWSERS */}
       <div className="h-20" />
+      <footer className="w-full max-w-3xl mx-auto py-8 px-6">
+        <div className="border-t border-zinc-900 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Left Side: Rights */}
+          <p className="text-[10px] md:text-xs font-medium text-zinc-500 uppercase tracking-[0.2em]">
+            © {new Date().getFullYear()} All Rights Reserved to{" "}
+            <span className="text-zinc-300">Reddit</span>
+          </p>
+
+          {/* Center: Subtle Dot (Hidden on mobile) */}
+          <div className="hidden md:block w-1 h-1 rounded-full bg-zinc-800" />
+
+          {/* Right Side: Credit */}
+          <p className="text-[10px] md:text-xs font-medium text-zinc-500 uppercase tracking-[0.2em]">
+            Design by{" "}
+            <span className="text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer tracking-widest font-bold">
+              MFA Agency
+            </span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
