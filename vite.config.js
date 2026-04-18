@@ -6,7 +6,8 @@ export default defineConfig({
   server: {
     proxy: {
       // "/api": "https://reddit-insight-xi.vercel.app",
-      target: "http://localhost:5173",
+      target: "https://reddit-insight-xi.vercel.app",
+      // target: "http://localhost:5173",
     },
   },
 });
