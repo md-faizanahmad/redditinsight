@@ -87,7 +87,7 @@ export default async function handler(req, res) {
 
     const response = await fetch(url, {
       headers: {
-        "User-Agent": "reddit-search-app/1.0",
+        "User-Agent": "web:reddit-insight:v1.0 (by /u/coldtruthvoice)",
       },
       signal: controller.signal,
     });
